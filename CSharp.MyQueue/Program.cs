@@ -11,41 +11,40 @@ namespace CSharp.MyQueue
     public class Queue<T>: IEnumerable<T>
     {
         private T[] queueArray ;
-        private int First { get; set; }
-        private int Last { get; set; }
-        private const int InitCapacity = 16;
-        private int QueueCapacity;
+        private int first;
+        private int last;
+        private const int initCapacity = 16;
+        private int queueCapacity;
         private int index = 0;
 
         //public Queue()
         //{
         //    queueArray = new T[InitCapacity];
         //    First = Last =  0;
+        //    QueueCapacity = InitCapacity;
         //}
 
         public Queue(int length)
         {
-            First = 0;
-            Last = 0;
-            QueueCapacity = length;
+            first = 0;
+            last = 0;
+            queueCapacity = length;
             queueArray = new T[length];
         }
 
         public void Enqueue(T obj)
         {
 
-            if ((Last++) % QueueCapacity == First % QueueCapacity)
+            if ((last + 1) % queueCapacity == first % queueCapacity)
             {
                 ExpandQueue();
-                Last = (Last++) % QueueCapacity;
-                queueArray[Last] = obj;
-                QueueCapacity++;
+                last = (last + 1) % queueCapacity;
+                queueArray[last] = obj;
             }
             else
             {        
-                Last = (Last++) % QueueCapacity;
-                queueArray[Last] = obj;
-                QueueCapacity++;
+                last = (last++) % queueCapacity;
+                queueArray[last] = obj;
             }
 
         }
@@ -53,15 +52,15 @@ namespace CSharp.MyQueue
         private void ExpandQueue()
         {
             T[] NewArray = new T[queueArray.Length * 2];
-            for (int i = 0; i < QueueCapacity; i++)
+            for (int i = 0; i < queueCapacity; i++)
             {
-                NewArray[i] = queueArray[First];
-                First = (First++) % queueArray.Length;
+                NewArray[i] = queueArray[first];
+                first = (first++) % queueArray.Length;
             }
             queueArray = NewArray;
-            First = 0;
-            Last = QueueCapacity - 1;
-            QueueCapacity*=2;
+            first = 0;
+            last = queueCapacity - 1;
+            queueCapacity*=2;
         }
 
         public T Dequeue()
@@ -70,26 +69,21 @@ namespace CSharp.MyQueue
                 throw new Exception(string.Format("Queue is empty!"));
             else
             {          
-                T value = queueArray[First];   
-                queueArray[First] = default(T);
-                First = (First++) % QueueCapacity;
-                QueueCapacity--;
+                T value = queueArray[first];   
+                queueArray[first] = default(T);
+                first = (first++)%queueCapacity;
                 return value;
             }
         }
 
 
-        public bool IsEmpty() {
-            if (QueueCapacity == 0)
-                return true;
-            else
-                return false;
-        }
+        public bool IsEmpty() => first%queueCapacity == last%queueCapacity;
+
 
         public void Clear()
         {
-            First = 0;
-            Last = 0;
+            first = 0;
+            last = 0;
         }
 
         public T Peek()
@@ -97,7 +91,7 @@ namespace CSharp.MyQueue
             if (IsEmpty())
                 throw new Exception(string.Format("Queue is empty!"));
             else
-                return queueArray[First];
+                return queueArray[first];
         }
 
 
